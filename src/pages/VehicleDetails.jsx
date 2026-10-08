@@ -129,12 +129,12 @@ export default function VehicleDetails() {
 
           <article className="mt-2 grid gap-x-12 lg:mt-4 lg:grid-cols-12">
             {/* Galeria */}
-            <div className="-mx-gutter sm:mx-0 lg:col-span-7 lg:col-start-1 lg:row-start-1 xl:col-span-8">
+            <div className="-mx-gutter min-w-0 sm:mx-0 lg:col-span-7 lg:col-start-1 lg:row-start-1 xl:col-span-8">
               <VehicleGallery vehicle={vehicle} />
             </div>
 
             {/* Resumo + CTAs (sticky no desktop) */}
-            <aside className="pt-6 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:pt-0 xl:col-span-4 xl:col-start-9">
+            <aside className="min-w-0 pt-6 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:pt-0 xl:col-span-4 xl:col-start-9">
               <div className="lg:sticky lg:top-24">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="label-tech text-white">{vehicle.brand}</span>
@@ -192,7 +192,7 @@ export default function VehicleDetails() {
             </aside>
 
             {/* Conteúdo */}
-            <div className="lg:col-span-7 lg:col-start-1 lg:row-start-2 xl:col-span-8">
+            <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-2 xl:col-span-8">
               <DetailSection index="01" title="Descrição">
                 <p className="max-w-2xl text-base leading-relaxed text-gray sm:text-lg">{vehicle.description}</p>
               </DetailSection>

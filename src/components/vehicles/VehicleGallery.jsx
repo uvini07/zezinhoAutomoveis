@@ -51,7 +51,7 @@ export default function VehicleGallery({ vehicle }) {
   const many = images.length > 1;
 
   return (
-    <div>
+    <div className="min-w-0 max-w-full">
       <div className={cn(frame, 'group/gallery')}>
         <div ref={emblaRef} className="overflow-hidden" aria-roledescription="carrossel" aria-label="Fotos do veículo">
           <div className="flex touch-pan-y">
