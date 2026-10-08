@@ -12,6 +12,7 @@ import {
   getVehicleImageAlt,
   getVehicleName,
   getVehicleUrl,
+  getYearLabel,
   pad2,
 } from '@/utils/vehicleUtils';
 
@@ -22,7 +23,7 @@ import {
 export default function VehicleCard({ vehicle, index, priority = false }) {
   const location = useLocation();
   const specs = [
-    { icon: Calendar, label: 'Ano', value: vehicle.year },
+    { icon: Calendar, label: 'Ano', value: getYearLabel(vehicle) },
     { icon: Gauge, label: 'Quilometragem', value: formatMileage(vehicle.mileage) },
     { icon: Cog, label: 'Câmbio', value: vehicle.transmission },
     { icon: Fuel, label: 'Combustível', value: vehicle.fuel },
@@ -46,7 +47,10 @@ export default function VehicleCard({ vehicle, index, priority = false }) {
             {pad2(index)}
           </span>
         )}
-        {vehicle.featured && <Badge className="absolute right-3 top-3">Destaque</Badge>}
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
+          {vehicle.featured && <Badge>Destaque</Badge>}
+          {vehicle.armored && <Badge variant="outline">Blindado</Badge>}
+        </div>
         <span
           aria-hidden="true"
           className="absolute bottom-0 left-0 h-[3px] w-14 bg-red transition-[width] duration-500 ease-race group-hover:w-28"
@@ -76,7 +80,14 @@ export default function VehicleCard({ vehicle, index, priority = false }) {
         </ul>
 
         <div className="mt-auto pt-5">
-          <p className="label-tech">Preço</p>
+          <p className="label-tech">
+            Preço
+            {vehicle.oldPrice && (
+              <>
+                {' '}· de <s className="tnum">{formatPrice(vehicle.oldPrice)}</s>
+              </>
+            )}
+          </p>
           <p className="font-heading text-[1.65rem] font-semibold leading-tight tnum text-white">
             {formatPrice(vehicle.price)}
           </p>

@@ -11,7 +11,7 @@
  * Enquanto estiver vazio, os links abrem o WhatsApp com a mensagem pronta
  * para o usuário escolher o contato (wa.me/?text=...).
  */
-export const WHATSAPP_NUMBER = '';
+export const WHATSAPP_NUMBER = '5511940208218';
 
 export const SITE = {
   name: 'Zezinho Automóveis',
@@ -38,10 +38,10 @@ export const NAV_LINKS = [
  * Dados de estoque: enquanto `true`, o site usa os veículos MOCK de
  * src/data/vehicles.js e exibe um aviso discreto no rodapé.
  */
-export const USE_MOCK_DATA = true;
+export const USE_MOCK_DATA = false;
 
-/** Latência simulada do "fetch" mock — permite ver os estados de loading. */
-export const MOCK_LATENCY_MS = 450;
+/** Latência simulada do "fetch" local (0 = imediato). Útil para testar os estados de loading. */
+export const MOCK_LATENCY_MS = 0;
 
 /** Imagem exibida na galeria do veículo enquanto não houver fotos. */
 export const VEHICLE_PLACEHOLDER_IMAGE = '/img/veiculo-em-preparacao.webp';

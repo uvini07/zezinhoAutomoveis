@@ -28,6 +28,7 @@ import {
   getVehicleSlug,
   getVehicleSpecList,
   getVehicleUrl,
+  getYearLabel,
   pad2,
 } from '@/utils/vehicleUtils';
 
@@ -71,7 +72,9 @@ function buildVehicleSchema(vehicle) {
     brand: { '@type': 'Brand', name: vehicle.brand },
     model: vehicle.model,
     vehicleModelDate: String(vehicle.year),
-    mileageFromOdometer: { '@type': 'QuantitativeValue', value: vehicle.mileage, unitCode: 'KMT' },
+    ...(vehicle.mileage != null && {
+      mileageFromOdometer: { '@type': 'QuantitativeValue', value: vehicle.mileage, unitCode: 'KMT' },
+    }),
     vehicleTransmission: vehicle.transmission,
     fuelType: vehicle.fuel,
     bodyType: vehicle.category,
@@ -99,7 +102,7 @@ export default function VehicleDetails() {
     vehicle
       ? {
           title: `${getVehicleFullName(vehicle)} ${vehicle.year}`,
-          description: `${getVehicleFullName(vehicle)} ${vehicle.year}, ${formatMileage(vehicle.mileage)}, ${vehicle.transmission.toLowerCase()}, ${vehicle.fuel.toLowerCase()}. ${formatPrice(vehicle.price)}. Fale com a Zezinho Automóveis.`,
+          description: `${getVehicleFullName(vehicle)} ${vehicle.year}, ${formatMileage(vehicle.mileage).toLowerCase()}, ${vehicle.transmission.toLowerCase()}, ${vehicle.fuel.toLowerCase()}. ${formatPrice(vehicle.price)}. Fale com a Zezinho Automóveis.`,
           path: getVehicleUrl(vehicle),
         }
       : { title: 'Veículo' },
@@ -137,19 +140,29 @@ export default function VehicleDetails() {
                   <span className="label-tech text-white">{vehicle.brand}</span>
                   <span aria-hidden="true" className="h-px w-6 bg-line-strong" />
                   <span className="label-tech">{vehicle.category}</span>
-                  {vehicle.featured && <Badge className="ml-auto">Destaque</Badge>}
+                  <span className="ml-auto flex gap-1.5">
+                    {vehicle.armored && <Badge variant="outline">Blindado</Badge>}
+                    {vehicle.featured && <Badge>Destaque</Badge>}
+                  </span>
                 </div>
                 <h1 className="mt-3 font-heading text-[2.15rem] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.75rem]">
                   {getVehicleName(vehicle)}
                 </h1>
                 <p className="mt-2 text-sm text-gray">
-                  {fullName} · {vehicle.year} · {formatMileage(vehicle.mileage)}
+                  {fullName} · {getYearLabel(vehicle)} · {formatMileage(vehicle.mileage)}
                 </p>
 
                 <div className="redline mt-6 w-24" aria-hidden="true" />
 
                 <div className="mt-6">
-                  <p className="label-tech">Preço</p>
+                  <p className="label-tech">
+                    Preço
+                    {vehicle.oldPrice && (
+                      <>
+                        {' '}· de <s className="tnum">{formatPrice(vehicle.oldPrice)}</s>
+                      </>
+                    )}
+                  </p>
                   <p className="font-heading text-[2.6rem] font-semibold leading-tight tnum sm:text-5xl">
                     {formatPrice(vehicle.price)}
                   </p>

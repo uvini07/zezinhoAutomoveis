@@ -20,7 +20,11 @@ export function formatPriceShort(value) {
   return `R$ ${Math.round(value / 1000)} mil`;
 }
 
-export const formatMileage = (km) => `${integerBR.format(km)} km`;
+export const formatMileage = (km) => (km == null ? 'Km não informado' : km === 0 ? '0 km' : `${integerBR.format(km)} km`);
+
+/** "2025/2026" (fabricação/modelo) ou só o ano modelo. */
+export const getYearLabel = (v) =>
+  v.yearManufacture && v.yearManufacture !== v.year ? `${v.yearManufacture}/${v.year}` : String(v.year);
 
 export const formatNumber = (n) => integerBR.format(n);
 
@@ -71,7 +75,7 @@ export const getVehicleImageAlt = (v, index = 0) =>
 
 function getSearchHaystack(v) {
   return normalizeText(
-    [v.brand, v.model, v.version, v.category, v.fuel, v.transmission, v.year, v.specs?.color].join(' '),
+    [v.brand, v.model, v.version, v.category, v.fuel, v.transmission, v.year, v.specs?.color, v.armored && 'blindado'].join(' '),
   );
 }
 
@@ -98,7 +102,7 @@ export const EMPTY_FILTERS = {
   categories: [],
 };
 
-export const PRICE_STEPS = [150000, 250000, 350000, 500000, 750000, 1000000, 1500000];
+export const PRICE_STEPS = [50000, 75000, 100000, 150000, 200000, 300000, 400000, 600000, 1000000];
 
 export function filterVehicles(list, f) {
   return list.filter((v) => {
@@ -206,6 +210,8 @@ export const getFeaturedVehicles = (list) => sortVehicles(list.filter((v) => v.f
 export function getVehicleSpecList(v) {
   const s = v.specs ?? {};
   return [
+    { label: 'Ano (fab./modelo)', value: getYearLabel(v) },
+    { label: 'Quilometragem', value: formatMileage(v.mileage) },
     { label: 'Motor', value: s.engine },
     { label: 'Potência', value: s.power },
     { label: 'Torque', value: s.torque },
@@ -214,6 +220,7 @@ export function getVehicleSpecList(v) {
     { label: 'Câmbio', value: v.transmission },
     { label: 'Combustível', value: v.fuel },
     { label: 'Carroceria', value: v.category },
+    { label: 'Blindagem', value: v.armored ? 'Sim' : undefined },
     { label: 'Portas', value: s.doors },
     { label: 'Cor', value: s.color },
   ].filter((item) => item.value !== undefined && item.value !== null && item.value !== '');

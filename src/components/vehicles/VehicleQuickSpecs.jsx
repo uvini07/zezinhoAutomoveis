@@ -1,11 +1,11 @@
 import { Calendar, Cog, Fuel, Gauge } from 'lucide-react';
-import { formatNumber } from '@/utils/vehicleUtils';
+import { formatNumber, getYearLabel } from '@/utils/vehicleUtils';
 
 /** Bloco de informações principais: ANO · KM · CÂMBIO · COMBUSTÍVEL. */
 export default function VehicleQuickSpecs({ vehicle }) {
   const items = [
-    { icon: Calendar, label: 'Ano', value: vehicle.year },
-    { icon: Gauge, label: 'Km', value: formatNumber(vehicle.mileage) },
+    { icon: Calendar, label: 'Ano', value: getYearLabel(vehicle) },
+    { icon: Gauge, label: 'Km', value: vehicle.mileage == null ? '—' : formatNumber(vehicle.mileage) },
     { icon: Cog, label: 'Câmbio', value: vehicle.transmission },
     { icon: Fuel, label: 'Combustível', value: vehicle.fuel },
   ];

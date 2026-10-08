@@ -31,8 +31,8 @@ export default function CategoryShowcase() {
         />
 
         {isLoading ? (
-          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {[0, 1, 2, 3, 4].map((i) => (
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div key={i} className="skeleton-surface h-36 rounded-md sm:h-44" />
             ))}
           </div>
@@ -42,7 +42,7 @@ export default function CategoryShowcase() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-            className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5"
+            className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4"
           >
             {categories.map((category, i) => (
               <motion.li
