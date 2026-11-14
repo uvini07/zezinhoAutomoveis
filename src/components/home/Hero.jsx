@@ -49,27 +49,43 @@ export default function Hero() {
       </video>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-linear-to-t from-black to-transparent" />
 
-      <div className="absolute inset-x-3 bottom-8 flex justify-center sm:bottom-12">
-      <motion.div
-        initial={reduceMotion ? false : { x: '-110vw', skewX: -8, filter: 'blur(8px)' }}
-        animate={show ? { x: 0, skewX: 0, filter: 'blur(0px)' } : {}}
-        transition={{ duration: PULL_DURATION, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY }}
-        className="w-full sm:w-[34rem]"
-      >
-        <div className="glass flex flex-col items-center gap-5 rounded-[2rem] px-6 py-7 text-center sm:px-10">
-          <h1 className="font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Zezinho Automóveis
-          </h1>
-          <p className="text-white/65">Seu próximo carro começa aqui.</p>
+      {/* Textos no caminho do carro: vêm puxados por ele, da esquerda */}
+      <div className="absolute inset-x-4 top-1/2 flex -translate-y-1/2 flex-col items-center text-center">
+        <motion.h1
+          initial={reduceMotion ? false : { x: '-110vw', skewX: -10, filter: 'blur(10px)' }}
+          animate={show ? { x: 0, skewX: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: PULL_DURATION, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY }}
+          className="font-heading text-[clamp(2.6rem,9vw,7.5rem)] font-semibold leading-none tracking-tight text-white [text-shadow:0_10px_40px_rgb(0_0_0/0.6)]"
+        >
+          Zezinho Automóveis
+        </motion.h1>
+        <motion.p
+          initial={reduceMotion ? false : { x: '-110vw', filter: 'blur(10px)' }}
+          animate={show ? { x: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: PULL_DURATION, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY + 0.15 }}
+          className="mt-4 text-[clamp(1rem,2.2vw,1.6rem)] text-white/75"
+        >
+          A melhor loja da região.
+        </motion.p>
+      </div>
+
+      {/* Barra de vidro achatada com a ação */}
+      <div className="absolute inset-x-3 bottom-6 flex justify-center sm:bottom-10">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={show ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY + PULL_DURATION * 0.6 }}
+          className="glass flex w-full items-center justify-between gap-4 rounded-full py-1.5 pl-6 pr-1.5 sm:w-auto sm:gap-8"
+        >
+          <p className="text-sm text-white/75">Seu próximo carro começa aqui.</p>
           <Link
             to="/estoque"
-            className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-medium text-black transition-transform hover:scale-[1.03]"
+            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white px-5 text-sm font-medium text-black transition-transform hover:scale-[1.03]"
           >
             Ver estoque
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
-        </div>
-      </motion.div>
+        </motion.div>
       </div>
     </section>
   );
