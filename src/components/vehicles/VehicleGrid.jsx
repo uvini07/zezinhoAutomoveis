@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import VehicleCard from '@/components/vehicles/VehicleCard';
 import SkeletonVehicleCard from '@/components/vehicles/SkeletonVehicleCard';
 import { cn } from '@/utils/cn';
+import { useGlowGrid } from '@/hooks/useGlowGrid';
 
 const LAYOUTS = {
   // Estoque com sidebar de filtros no desktop
@@ -21,6 +22,7 @@ const item = {
 
 /** Grid responsivo: 1 coluna (mobile) · 2 (tablet) · 3 (desktop). Stagger na entrada. */
 export default function VehicleGrid({ vehicles, isLoading, layout = 'full', skeletonCount = 6, label }) {
+  const glow = useGlowGrid();
   const gridClass = cn('grid gap-4 sm:gap-5', LAYOUTS[layout]);
 
   if (isLoading) {
@@ -36,7 +38,15 @@ export default function VehicleGrid({ vehicles, isLoading, layout = 'full', skel
   }
 
   return (
-    <motion.ul className={gridClass} variants={container} initial="hidden" animate="show" aria-label={label}>
+    <motion.ul
+      ref={glow.ref}
+      onPointerMove={glow.onPointerMove}
+      className={cn(gridClass, 'glow-grid')}
+      variants={container}
+      initial="hidden"
+      animate="show"
+      aria-label={label}
+    >
       <AnimatePresence mode="popLayout" initial={false}>
         {vehicles.map((vehicle, i) => (
           <motion.li

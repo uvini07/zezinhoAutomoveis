@@ -311,3 +311,69 @@ video.bg-video::-webkit-media-controls-overlay-play-button {
     background: #111;
   }
 }
+
+/* ==========================================================================
+   BRILHO QUE SEGUE O MOUSE NOS CARTÕES
+   .glow-grid  → contêiner (brilho no espaço entre os cartões, atrás do vidro)
+   .glow-card  → cartão (borda acesa + luz interna no ponto do cursor)
+   ========================================================================== */
+@layer components {
+  .glow-grid {
+    position: relative;
+    isolation: isolate;
+    --mx: -9999px;
+    --my: -9999px;
+  }
+  .glow-grid::before {
+    content: "";
+    position: absolute;
+    inset: -4rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(22rem circle at calc(var(--mx) + 4rem) calc(var(--my) + 4rem), rgb(226 27 53 / 0.28), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-race);
+  }
+
+  .glow-card {
+    isolation: isolate;
+    --mx: -9999px;
+    --my: -9999px;
+  }
+  /* luz interna, por baixo do conteúdo */
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(18rem circle at var(--mx) var(--my), rgb(226 27 53 / 0.2), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-race);
+  }
+  /* borda acesa: um anel de 1px recortado do gradiente */
+  .glow-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    padding: 1.5px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(14rem circle at var(--mx) var(--my), rgb(255 70 95 / 0.95), rgb(226 27 53 / 0.35) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-race);
+  }
+
+  @media (hover: hover) {
+    .glow-grid:hover::before,
+    .glow-grid:hover .glow-card::before,
+    .glow-grid:hover .glow-card::after {
+      opacity: 1;
+    }
+  }
+}
