@@ -267,3 +267,12 @@
     display: none;
   }
 }
+
+/* Faixa "Zezinho Automóveis" do hero: desliza sem parar */
+@keyframes banner {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[banner_28s_linear_infinite\] { animation: none; }
+}

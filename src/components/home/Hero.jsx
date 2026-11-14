@@ -1,20 +1,23 @@
-import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 const ease = [0.22, 1, 0.36, 1];
 
+/* Tempos do vídeo (s): o carro cruza a tela entre ~0.3s e ~5s. */
+const CAR_ENTER = 0.3;
+const CAR_EXIT = 4.6;
+
 /** Linha do título revelada por máscara (sobe de baixo). */
-function MaskLine({ delay, children }) {
+function MaskLine({ show, delay, children }) {
   return (
-    // padding/margem negativos no topo: a máscara não corta acentos (Ó, É…)
     <span className="-mt-[0.16em] block overflow-hidden pb-[0.04em] pt-[0.16em]">
       <motion.span
         className="block"
         initial={{ y: '135%' }}
-        animate={{ y: 0 }}
+        animate={show ? { y: 0 } : { y: '135%' }}
         transition={{ duration: 0.9, ease, delay }}
       >
         {children}
@@ -23,99 +26,155 @@ function MaskLine({ delay, children }) {
   );
 }
 
-const fadeUp = (delay) => ({
+const fadeUp = (show, delay) => ({
   initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
+  animate: show ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 },
   transition: { duration: 0.7, ease, delay },
 });
 
-/** Diagonais decorativas (45°, como o símbolo) desenhadas na entrada. */
-function HeroLines() {
+/** Texto repetido da faixa: "ZEZINHO AUTOMÓVEIS ■ ZEZINHO AUTOMÓVEIS ■ …" */
+function BannerText({ count = 8 }) {
+  return Array.from({ length: count }, (_, i) => (
+    <span key={i} className="flex shrink-0 items-center gap-6 pr-6">
+      ZEZINHO AUTOMÓVEIS
+      <span aria-hidden="true" className="size-2 rotate-45 bg-current" />
+    </span>
+  ));
+}
+
+/**
+ * Faixa diagonal que entra da esquerda junto com o carro e depois
+ * continua deslizando devagar, como banner de pista.
+ */
+function Banner({ play, delay, className, tone }) {
   return (
-    <svg
+    <motion.div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 h-full w-full"
-      preserveAspectRatio="none"
-      viewBox="0 0 100 100"
+      className={`pointer-events-none absolute left-[-10%] w-[120%] overflow-hidden ${className}`}
+      initial={{ clipPath: 'inset(0 100% 0 0)' }}
+      animate={play ? { clipPath: 'inset(0 0% 0 0)' } : {}}
+      transition={{ duration: CAR_EXIT - CAR_ENTER, ease: [0.45, 0, 0.55, 1], delay }}
     >
-      {[
-        { x1: 58, x2: 100, y2: 58, o: 0.06, d: 0.3 },
-        { x1: 70, x2: 100, y2: 30, o: 0.05, d: 0.45 },
-        { x1: 40, x2: 100, y2: 60, o: 0.035, d: 0.6 },
-      ].map((l, i) => (
-        <motion.line
-          key={i}
-          x1={l.x1}
-          y1={0}
-          x2={l.x2}
-          y2={l.y2}
-          stroke="white"
-          strokeOpacity={l.o}
-          strokeWidth="0.15"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.4, ease, delay: l.d }}
-        />
-      ))}
-    </svg>
+      <div
+        className={`flex w-max animate-[banner_28s_linear_infinite] py-2 font-display text-[clamp(1.1rem,2.4vw,2rem)] tracking-[0.12em] sm:py-3 ${tone}`}
+      >
+        <BannerText />
+        <BannerText />
+      </div>
+    </motion.div>
   );
 }
 
 /**
- * Hero editorial: título grande à esquerda, fotografia real da loja à
- * direita (desktop) cortada em diagonal, ou logo abaixo do texto (mobile).
+ * Hero em vídeo: um esportivo vermelho cruza o estúdio escuro da esquerda
+ * para a direita, puxando as faixas "Zezinho Automóveis". Quando ele sai,
+ * o título e as ações aparecem.
  */
 export default function Hero() {
-  const ref = useRef(null);
+  const videoRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const photoY = useTransform(scrollYProgress, [0, 1], ['0%', reduceMotion ? '0%' : '10%']);
+  const [play, setPlay] = useState(false);
+  const [showText, setShowText] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setPlay(true);
+      setShowText(true);
+      return;
+    }
+    const v = videoRef.current;
+    if (!v) return;
+    let timer;
+    const start = () => {
+      setPlay(true);
+      timer = setTimeout(() => setShowText(true), (CAR_EXIT - 0.4) * 1000);
+    };
+    // Se o vídeo não conseguir tocar (economia de dados, autoplay bloqueado),
+    // o texto aparece mesmo assim.
+    const fallback = setTimeout(() => {
+      if (v.paused) {
+        setPlay(true);
+        setShowText(true);
+      }
+    }, 2500);
+    v.addEventListener('playing', start, { once: true });
+    v.play?.().catch(() => {});
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fallback);
+      v.removeEventListener('playing', start);
+    };
+  }, [reduceMotion]);
 
   return (
-    <section ref={ref} aria-labelledby="hero-titulo" className="relative overflow-hidden border-b border-line">
-      <div
+    <section
+      aria-labelledby="hero-titulo"
+      className="relative isolate flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden border-b border-line bg-black"
+    >
+      {/* Vídeo de fundo */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
+        poster="/hero/carro-vermelho-poster.jpg"
+        muted
+        playsInline
+        preload="auto"
+        autoPlay={!reduceMotion}
         aria-hidden="true"
-        className="absolute inset-0 bg-grid [mask-image:linear-gradient(to_bottom,black_30%,transparent)]"
+      >
+        <source src="/hero/carro-vermelho.webm" type="video/webm" />
+        <source src="/hero/carro-vermelho.mp4" type="video/mp4" />
+      </video>
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-black via-black/20 to-black/60" />
+
+      {/* Faixas que acompanham o carro */}
+      <Banner
+        play={play}
+        delay={CAR_ENTER}
+        className="top-[5%] -rotate-2 sm:top-[7%]"
+        tone="bg-red text-white"
       />
-      <HeroLines />
+      <Banner
+        play={play}
+        delay={CAR_ENTER + 0.25}
+        className="top-[12%] rotate-1 sm:top-[15%]"
+        tone="border-y border-line-strong bg-black/80 text-white/80 [animation-direction:reverse]"
+      />
 
-      <div className="shell relative z-10 flex flex-col justify-center pb-10 pt-8 sm:pt-12 lg:min-h-[calc(100svh-5rem)] lg:max-h-[56rem] lg:py-16">
-        <div className="lg:max-w-[46rem] xl:max-w-[52rem]">
-          <motion.div {...fadeUp(0)} className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span aria-hidden="true" className="size-2 bg-red" />
-            <span className="label-tech whitespace-nowrap text-white">Zezinho Automóveis</span>
-            <span aria-hidden="true" className="hidden h-px w-10 bg-line-strong sm:block" />
-            <span className="label-tech basis-full whitespace-nowrap pl-5 sm:basis-auto sm:pl-0">01 / Showroom digital</span>
-          </motion.div>
+      <div className="shell relative z-10 mt-auto pb-12 pt-48 sm:pb-16 sm:pt-56">
+        <motion.div {...fadeUp(showText, 0)} className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span aria-hidden="true" className="size-2 bg-red" />
+          <span className="label-tech whitespace-nowrap text-white">Zezinho Automóveis</span>
+          <span aria-hidden="true" className="hidden h-px w-10 bg-line-strong sm:block" />
+          <span className="label-tech whitespace-nowrap">01 / Showroom digital</span>
+        </motion.div>
 
-          <h1
-            id="hero-titulo"
-            className="display mt-6 text-[clamp(3.6rem,16.5vw,6.5rem)] lg:text-[clamp(6.5rem,8.6vw,9.75rem)]"
-          >
-            <MaskLine delay={0.1}>Seu próximo</MaskLine>
-            <MaskLine delay={0.18}>carro começa</MaskLine>
-            <MaskLine delay={0.26}>
-              aqui<span className="text-red">.</span>
-            </MaskLine>
-          </h1>
+        <h1
+          id="hero-titulo"
+          className="display mt-5 max-w-[60rem] text-[clamp(3.4rem,14vw,6rem)] lg:text-[clamp(6rem,8vw,9rem)]"
+        >
+          <MaskLine show={showText} delay={0.05}>Seu próximo</MaskLine>
+          <MaskLine show={showText} delay={0.13}>carro começa</MaskLine>
+          <MaskLine show={showText} delay={0.21}>
+            aqui<span className="text-red">.</span>
+          </MaskLine>
+        </h1>
 
-          <motion.p {...fadeUp(0.45)} className="mt-6 max-w-md text-base leading-relaxed text-gray sm:text-lg">
-            Veículos selecionados, procedência e atendimento especializado.
-          </motion.p>
+        <motion.p {...fadeUp(showText, 0.4)} className="mt-5 max-w-md text-base leading-relaxed text-gray sm:text-lg">
+          Veículos selecionados, procedência e atendimento especializado.
+        </motion.p>
 
-          <motion.div {...fadeUp(0.55)} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button to="/estoque" size="lg">
-              Ver estoque
-            </Button>
-            <WhatsAppButton size="lg">Falar no WhatsApp</WhatsAppButton>
-          </motion.div>
-        </div>
+        <motion.div {...fadeUp(showText, 0.5)} className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button to="/estoque" size="lg">
+            Ver estoque
+          </Button>
+          <WhatsAppButton size="lg">Falar no WhatsApp</WhatsAppButton>
+        </motion.div>
 
         <motion.a
-          {...fadeUp(0.8)}
+          {...fadeUp(showText, 0.7)}
           href="#destaques"
-          className="group mt-14 hidden w-fit items-center gap-3 lg:inline-flex"
+          className="group mt-12 hidden w-fit items-center gap-3 lg:inline-flex"
         >
           <span className="grid size-10 place-items-center rounded-sm border border-line-strong transition-colors group-hover:border-red group-hover:bg-red">
             <ArrowDown className="size-4 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
@@ -123,37 +182,6 @@ export default function Hero() {
           <span className="label-tech text-white">Explore o estoque</span>
         </motion.a>
       </div>
-
-      {/* Fotografia real da loja */}
-      <motion.figure
-        initial={{ clipPath: 'inset(0 0 0 100%)' }}
-        animate={{ clipPath: 'inset(0 0 0 0%)' }}
-        transition={{ duration: 1.1, ease, delay: 0.25 }}
-        className="relative mx-gutter mb-10 aspect-[4/3] overflow-hidden rounded-md border border-line sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:right-0 lg:m-0 lg:aspect-auto lg:w-[50%] lg:rounded-none lg:border-0 xl:w-[52%]"
-      >
-        <div className="absolute inset-0 lg:[clip-path:polygon(22%_0,100%_0,100%_100%,0_100%)]">
-          <motion.picture style={{ y: photoY }} className="absolute inset-0 block scale-110">
-            <source srcSet="/img/loja-fachada.avif" type="image/avif" />
-            <source srcSet="/img/loja-fachada.webp" type="image/webp" />
-            <img
-              src="/img/loja-fachada.jpg"
-              alt="Fachada da loja Zezinho Automóveis com veículos expostos no showroom"
-              width="1024"
-              height="768"
-              fetchPriority="high"
-              className="h-full w-full object-cover object-[50%_60%]"
-            />
-          </motion.picture>
-          <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black via-black/10 to-black/30 lg:bg-linear-to-r lg:from-black lg:via-black/20 lg:to-transparent" />
-          <div aria-hidden="true" className="absolute inset-0 bg-grid opacity-50" />
-        </div>
-
-        <span aria-hidden="true" className="absolute left-3 top-3 size-4 border-l border-t border-white/40 lg:left-auto lg:right-6 lg:top-6 lg:border-l-0 lg:border-r" />
-        <figcaption className="absolute bottom-4 left-4 flex items-center gap-2.5 lg:bottom-8 lg:left-auto lg:right-8">
-          <span aria-hidden="true" className="size-2 bg-red" />
-          <span className="label-tech text-white">Nossa loja · Showroom</span>
-        </figcaption>
-      </motion.figure>
     </section>
   );
 }
