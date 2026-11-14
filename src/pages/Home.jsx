@@ -48,7 +48,7 @@ export default function Home() {
       <Hero />
 
       {/* Estoque */}
-      <section aria-labelledby="estoque-titulo" className="shell pt-24 sm:pt-32">
+      <section id="vitrine" aria-labelledby="estoque-titulo" className="shell scroll-mt-4 pt-24 sm:pt-32">
         <Reveal className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="label-tech">Escolhidos a dedo</p>
