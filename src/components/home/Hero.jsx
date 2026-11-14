@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
+import { useVehicles } from '@/hooks/useVehicles';
+import { getVehicleCover, getVehicleFullName, sortVehicles } from '@/utils/vehicleUtils';
 
 /* Vídeo acelerado: o carro cruza a tela em ~2.7s. */
 const SPEED = 1.6;
@@ -36,6 +38,73 @@ function Pulled({ as: Tag = 'div', show, delay = 0, className, children, ...prop
     >
       {children}
     </MotionTag>
+  );
+}
+
+/**
+ * Convite para rolar: miniaturas de três carros do estoque, a frase e uma
+ * seta que pulsa. Leva até a vitrine logo abaixo.
+ */
+function ScrollCue({ show, delay }) {
+  const { vehicles } = useVehicles();
+  const reduceMotion = useReducedMotion();
+  const thumbs = useMemo(() => {
+    const withPhoto = vehicles.filter((v) => getVehicleCover(v));
+    const featured = sortVehicles(withPhoto.filter((v) => v.featured), 'recentes');
+    return [...featured, ...withPhoto.filter((v) => !v.featured)].slice(0, 3);
+  }, [vehicles]);
+  const extra = vehicles.length - thumbs.length;
+
+  function goToShowcase(event) {
+    const target = document.getElementById('vitrine');
+    if (!target) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  return (
+    <motion.a
+      href="#vitrine"
+      onClick={goToShowcase}
+      initial={{ opacity: 0, y: 16 }}
+      animate={show ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.9, ease: pullEase, delay }}
+      className="group flex flex-col items-center gap-3 text-center"
+    >
+      {thumbs.length > 0 && (
+        <span className="flex items-center" aria-hidden="true">
+          {thumbs.map((v, i) => (
+            <img
+              key={v.id}
+              src={getVehicleCover(v)}
+              alt=""
+              width="48"
+              height="48"
+              decoding="async"
+              className="size-12 rounded-full border-2 border-black/80 object-cover shadow-lg transition-transform duration-500 ease-race group-hover:-translate-y-0.5"
+              style={{ marginLeft: i ? '-0.85rem' : 0, transitionDelay: `${i * 40}ms` }}
+            />
+          ))}
+          {extra > 0 && (
+            <span className="glass -ml-[0.85rem] grid size-12 place-items-center rounded-full text-xs font-medium tnum text-white">
+              +{extra}
+            </span>
+          )}
+        </span>
+      )}
+      <span className="text-[15px] font-medium text-white">Venha conhecer seu futuro automóvel</span>
+      <motion.span
+        aria-hidden="true"
+        className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/5 text-white/80 backdrop-blur-md transition-colors group-hover:bg-white/15"
+        animate={reduceMotion ? {} : { y: [0, 6, 0] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <ChevronDown className="size-4" />
+      </motion.span>
+      <span className="sr-only">
+        Ver carros em destaque{thumbs.length ? `: ${thumbs.map(getVehicleFullName).join(', ')}` : ''}
+      </span>
+    </motion.a>
   );
 }
 
@@ -147,6 +216,11 @@ export default function Hero() {
         >
           Zezinho Automóveis
         </Pulled>
+      </div>
+
+      {/* Convite para rolar até a vitrine */}
+      <div className="absolute inset-x-4 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+5rem)] flex justify-center sm:bottom-32">
+        <ScrollCue show={show} delay={PULL_DELAY + PULL_DURATION * 0.75} />
       </div>
 
       {/* Barra de vidro achatada com a ação */}
