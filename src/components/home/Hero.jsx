@@ -43,7 +43,7 @@ function Pulled({ as: Tag = 'div', show, delay = 0, className, children, ...prop
 
 /**
  * Convite para rolar: miniaturas de três carros do estoque, a frase e uma
- * seta que pulsa. Leva até a vitrine logo abaixo.
+ * seta que pulsa. Leva até a busca logo abaixo do hero.
  */
 function ScrollCue({ show, delay }) {
   const { vehicles } = useVehicles();
@@ -56,15 +56,15 @@ function ScrollCue({ show, delay }) {
   const extra = vehicles.length - thumbs.length;
 
   function goToShowcase(event) {
-    const target = document.getElementById('vitrine');
+    const target = document.getElementById('busca');
     if (!target) return;
     event.preventDefault();
-    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
   }
 
   return (
     <motion.a
-      href="#vitrine"
+      href="#busca"
       onClick={goToShowcase}
       initial={{ opacity: 0, y: 16 }}
       animate={show ? { opacity: 1, y: 0 } : {}}
@@ -218,7 +218,7 @@ export default function Hero() {
         </Pulled>
       </div>
 
-      {/* Convite para rolar até a vitrine */}
+      {/* Convite para rolar até a busca */}
       <div className="absolute inset-x-4 bottom-[calc(max(1.5rem,env(safe-area-inset-bottom))+5rem)] flex justify-center sm:bottom-32">
         <ScrollCue show={show} delay={PULL_DELAY + PULL_DURATION * 0.75} />
       </div>
