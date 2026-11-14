@@ -23,6 +23,7 @@ function primeVideo(v) {
   v.setAttribute('muted', '');
   v.setAttribute('playsinline', '');
   v.setAttribute('webkit-playsinline', '');
+  v.defaultPlaybackRate = SPEED;
   v.playbackRate = SPEED;
 }
 
@@ -142,8 +143,9 @@ export default function Hero() {
 
     v.addEventListener('playing', onPlaying, { once: true });
     v.addEventListener('ended', onEnded);
-    window.addEventListener('touchstart', unlock, { once: true, passive: true });
-    window.addEventListener('scroll', unlock, { once: true, passive: true });
+    // touchend/click contam como gesto do usuário no Safari; touchstart não.
+    const gestures = ['touchend', 'pointerup', 'click', 'keydown'];
+    gestures.forEach((g) => window.addEventListener(g, unlock, { once: true, passive: true }));
     if (v.readyState >= 2) tryPlay();
     else v.addEventListener('canplay', tryPlay, { once: true });
 
@@ -152,8 +154,7 @@ export default function Hero() {
       v.removeEventListener('playing', onPlaying);
       v.removeEventListener('ended', onEnded);
       v.removeEventListener('canplay', tryPlay);
-      window.removeEventListener('touchstart', unlock);
-      window.removeEventListener('scroll', unlock);
+      gestures.forEach((g) => window.removeEventListener(g, unlock));
     };
   }, [reduceMotion]);
 
@@ -178,8 +179,10 @@ export default function Hero() {
           disableRemotePlayback
           tabIndex={-1}
         >
-          <source src="/hero/carro-vermelho.webm" type="video/webm" />
+          {/* H.264 primeiro: é o que o Safari toca sozinho. WebM só como reserva. */}
+          <source src="/hero/carro-vermelho-720.mp4" type="video/mp4" media="(max-width: 767px)" />
           <source src="/hero/carro-vermelho.mp4" type="video/mp4" />
+          <source src="/hero/carro-vermelho.webm" type="video/webm" />
         </video>
       </motion.div>
 
