@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { ArrowRight, FileCheck, Handshake, ShieldCheck } from 'lucide-react';
 import Hero from '@/components/home/Hero';
+import QuickSearch from '@/components/home/QuickSearch';
 import Reveal from '@/components/ui/Reveal';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import VehicleCard from '@/components/vehicles/VehicleCard';
@@ -47,8 +48,15 @@ export default function Home() {
     <div className="full-bleed">
       <Hero />
 
+      {/* Busca rápida logo após o hero */}
+      <section id="busca" aria-label="Buscar carro" className="shell scroll-mt-24 pt-10 sm:pt-14">
+        <Reveal>
+          <QuickSearch />
+        </Reveal>
+      </section>
+
       {/* Estoque */}
-      <section id="vitrine" aria-labelledby="estoque-titulo" className="shell scroll-mt-4 pt-24 sm:pt-32">
+      <section id="vitrine" aria-labelledby="estoque-titulo" className="shell scroll-mt-24 pt-16 sm:pt-24">
         <Reveal className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="label-tech">Escolhidos a dedo</p>
