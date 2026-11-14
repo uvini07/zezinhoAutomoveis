@@ -35,7 +35,7 @@ export default function MobileMenu() {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto overscroll-contain border-l border-line bg-black-2"
+            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto overscroll-contain border-l border-line bg-black/75 backdrop-blur-2xl"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}

@@ -32,7 +32,7 @@ export default function ActiveFilters({ filters, onToggle, onChange, onClear }) 
           key={item.key}
           type="button"
           onClick={item.remove}
-          className="inline-flex h-8 items-center gap-1.5 rounded-xs border border-red/50 bg-red/10 pl-2.5 pr-1.5 text-xs text-white transition-colors hover:border-red hover:bg-red/20"
+          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-red/50 bg-red/15 backdrop-blur-md pl-2.5 pr-1.5 text-xs text-white transition-colors hover:border-red hover:bg-red/20"
           aria-label={`Remover filtro ${item.label}`}
         >
           {item.label}

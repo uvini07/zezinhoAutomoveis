@@ -13,20 +13,20 @@
   --color-current: currentColor;
 
   --color-black: #050505;
-  --color-black-2: #0a0a0a;
-  --color-graphite: #111111;
-  --color-surface: #1a1a1a;
+  --color-black-2: rgb(255 255 255 / 0.04);
+  --color-graphite: rgb(255 255 255 / 0.06);
+  --color-surface: rgb(255 255 255 / 0.1);
   --color-ui: #242424;
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.16);
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-line-strong: rgb(255 255 255 / 0.18);
 
   --color-red: #c8102e;
   --color-red-bright: #e21b35;
   --color-red-dark: #8e0b20;
 
   --color-white: #ffffff;
-  --color-gray: #a3a3a3;
-  --color-gray-dim: #858585;
+  --color-gray: rgb(255 255 255 / 0.62);
+  --color-gray-dim: rgb(255 255 255 / 0.42);
 
   --color-skeleton-1: #151515;
   --color-skeleton-2: #202020;
@@ -42,10 +42,10 @@
 
   /* Raios: técnicos, nunca "SaaS" */
   --radius-*: initial;
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --radius-xs: 10px;
+  --radius-sm: 16px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
   --radius-full: 9999px;
 
   /* Espaçamentos semânticos */
@@ -85,6 +85,11 @@
   body {
     min-height: 100dvh;
     background-color: var(--color-black);
+    background-image:
+      radial-gradient(55rem 38rem at 8% -6%, rgb(200 16 46 / 0.16), transparent 62%),
+      radial-gradient(48rem 40rem at 100% 42%, rgb(200 16 46 / 0.09), transparent 60%),
+      radial-gradient(40rem 30rem at 20% 105%, rgb(255 255 255 / 0.05), transparent 60%);
+    background-attachment: fixed;
     color: var(--color-white);
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01";
@@ -142,22 +147,20 @@
 
 /* Label técnico — microtexto estilo telemetria */
 @utility label-tech {
-  font-family: var(--font-heading);
-  font-size: 0.6875rem;
-  line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 450;
+  letter-spacing: 0;
   color: var(--color-gray);
 }
 
 /* Título display (Bebas Neue) */
 @utility display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
 }
 
 /* Corte diagonal — assinatura derivada do símbolo do logo */
@@ -173,10 +176,7 @@
 
 /* Grid técnico */
 @utility bg-grid {
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
+  background-image: none;
 }
 
 /* Hachura diagonal (45° como o símbolo) */
@@ -224,9 +224,7 @@
   .skeleton-surface {
     position: relative;
     overflow: hidden;
-    background:
-      radial-gradient(120% 90% at 85% 10%, var(--color-skeleton-3) 0%, transparent 55%),
-      linear-gradient(160deg, var(--color-skeleton-2) 0%, var(--color-skeleton-1) 55%, #0f0f0f 100%);
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.03));
   }
   .skeleton-surface::after {
     content: "";
@@ -245,6 +243,7 @@
 
   /* Linha vermelha com brilho sutil */
   .redline {
+    display: none;
     height: 2px;
     background: linear-gradient(90deg, var(--color-red-bright), var(--color-red) 60%, transparent);
     box-shadow: 0 0 18px rgb(226 27 53 / 0.45);
@@ -289,5 +288,26 @@
   &:hover {
     background: linear-gradient(135deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.06) 45%, rgb(255 255 255 / 0.12));
     border-color: rgb(255 255 255 / 0.28);
+  }
+}
+
+/* Vídeo de fundo: nunca mostrar o botão de play do sistema (iOS) */
+video.bg-video::-webkit-media-controls,
+video.bg-video::-webkit-media-controls-start-playback-button,
+video.bg-video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* Campos sobre vidro */
+@layer components {
+  input,
+  select,
+  textarea {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  select option {
+    background: #111;
   }
 }

@@ -69,7 +69,7 @@ function SearchPanel({ onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label="Buscar veículos"
-        className="relative flex h-full flex-col overflow-hidden bg-black-2 sm:mx-auto sm:mt-[9vh] sm:h-auto sm:max-h-[80vh] sm:max-w-2xl sm:rounded-md sm:border sm:border-line-strong sm:shadow-deep"
+        className="relative flex h-full flex-col overflow-hidden bg-black/75 backdrop-blur-2xl sm:mx-auto sm:mt-[9vh] sm:h-auto sm:max-h-[80vh] sm:max-w-2xl sm:rounded-md sm:border sm:border-line-strong sm:shadow-deep"
         initial={{ opacity: 0, scale: 0.97, y: -8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.98, y: -4 }}

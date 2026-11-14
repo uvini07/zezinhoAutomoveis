@@ -11,14 +11,14 @@ export default function VehicleQuickSpecs({ vehicle }) {
   ];
 
   return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line">
+    <dl className="grid grid-cols-2 gap-2">
       {items.map(({ icon: Icon, label, value }) => (
-        <div key={label} className="flex flex-col gap-2 bg-graphite p-4">
+        <div key={label} className="glass flex flex-col gap-2 rounded-2xl p-4">
           <dt className="label-tech flex items-center gap-2">
             <Icon className="size-3.5 text-red-bright" aria-hidden="true" />
             {label}
           </dt>
-          <dd className="font-heading text-xl font-semibold uppercase leading-none tnum text-white">{value}</dd>
+          <dd className="font-heading text-lg font-semibold leading-none tnum text-white">{value}</dd>
         </div>
       ))}
     </dl>

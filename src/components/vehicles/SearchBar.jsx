@@ -42,7 +42,7 @@ export default function SearchBar({ value, onChange, placeholder = 'Buscar marca
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={placeholder}
-        className="h-12 w-full rounded-sm border border-line-strong bg-graphite pl-11 pr-12 text-[15px] text-white placeholder:text-gray-dim transition-colors hover:border-white/30 focus-visible:border-red"
+        className="h-12 w-full rounded-full border border-line-strong bg-graphite pl-11 pr-12 text-[15px] text-white placeholder:text-gray-dim transition-colors hover:border-white/30 focus-visible:border-red"
       />
       {text && (
         <button

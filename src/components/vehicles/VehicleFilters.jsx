@@ -6,9 +6,7 @@ function FilterSection({ index, title, children }) {
   return (
     <fieldset className="min-w-0 border-b border-line py-5 last:border-b-0">
       <legend className="float-left mb-3 flex w-full items-center gap-2.5">
-        <span className="font-heading text-[11px] font-semibold tnum text-white">{index}</span>
-        <span aria-hidden="true" className="h-px w-4 bg-red" />
-        <span className="label-tech">{title}</span>
+        <span className="text-sm font-medium text-white">{title}</span>
       </legend>
       <div className="clear-both">{children}</div>
     </fieldset>

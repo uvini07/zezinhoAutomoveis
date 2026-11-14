@@ -17,7 +17,7 @@ const SelectField = forwardRef(function SelectField(
         <select
           ref={ref}
           className={cn(
-            'h-11 w-full truncate rounded-sm border border-line-strong bg-graphite pr-9 text-sm text-white transition-colors',
+            'h-11 w-full truncate rounded-full border border-line-strong bg-graphite pr-9 text-sm text-white transition-colors',
             'hover:border-white/30 focus-visible:border-red',
             Icon ? 'pl-9' : 'pl-3',
             selectClassName,
