@@ -6,7 +6,7 @@ import { VEHICLE_PLACEHOLDER_IMAGE } from '@/config/site';
 import { cn } from '@/utils/cn';
 import { getVehicleFullName, getVehicleImageAlt, getVehicleImages, pad2 } from '@/utils/vehicleUtils';
 
-const frame = 'relative overflow-hidden border-line bg-skeleton-1 sm:rounded-md sm:border';
+const frame = 'relative overflow-hidden rounded-3xl border border-white/15 bg-white/5';
 
 /**
  * Galeria do veículo (Embla): arraste no celular, setas no desktop,
@@ -76,7 +76,7 @@ export default function VehicleGallery({ vehicle }) {
 
         {many && (
           <>
-            <span className="absolute left-3 top-3 rounded-xs bg-black/70 px-2 py-1 font-heading text-[11px] font-semibold tnum text-white backdrop-blur-sm">
+            <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-xs tnum text-white backdrop-blur-md">
               {pad2(selected + 1)} / {pad2(images.length)}
             </span>
             {[
@@ -90,7 +90,7 @@ export default function VehicleGallery({ vehicle }) {
                 disabled={disabled}
                 aria-label={label}
                 className={cn(
-                  'absolute top-1/2 hidden size-11 -translate-y-1/2 place-items-center rounded-sm border border-white/15 bg-black/60 text-white backdrop-blur-sm transition-[opacity,background-color] hover:bg-red disabled:opacity-0 md:grid',
+                  'absolute top-1/2 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-[opacity,background-color] hover:bg-white/20 disabled:opacity-0 md:grid',
                   pos,
                 )}
               >
@@ -117,8 +117,8 @@ export default function VehicleGallery({ vehicle }) {
               aria-label={`Ver foto ${i + 1}`}
               aria-current={selected === i}
               className={cn(
-                'relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-xs border-2 transition-[border-color,opacity] sm:w-24',
-                selected === i ? 'border-red' : 'border-transparent opacity-60 hover:opacity-100',
+                'relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-[border-color,opacity] sm:w-24',
+                selected === i ? 'border-white/80' : 'border-transparent opacity-60 hover:opacity-100',
               )}
             >
               <VehicleImage src={src} alt="" />

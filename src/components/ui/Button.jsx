@@ -4,17 +4,16 @@ import { cn } from '@/utils/cn';
 
 const VARIANTS = {
   primary:
-    'bg-red text-white hover:bg-red-bright hover:shadow-glow',
-  secondary:
-    'border border-line-strong bg-white/[0.03] text-white backdrop-blur-sm hover:border-white/45 hover:bg-white/[0.07]',
+    'bg-red text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.25)] hover:bg-red-bright hover:shadow-glow',
+  secondary: 'glass glass-hover text-white',
   light: 'bg-white text-black hover:bg-white/90',
   ghost: 'text-white hover:text-white/75',
 };
 
 const SIZES = {
-  sm: 'h-10 gap-2 px-4 text-[11px]',
-  md: 'h-12 gap-3 px-5 text-xs',
-  lg: 'h-14 gap-3 px-6 text-[13px]',
+  sm: 'h-10 gap-2 px-4 text-sm',
+  md: 'h-12 gap-2.5 px-5 text-[15px]',
+  lg: 'h-13 gap-2.5 px-6 text-[15px]',
 };
 
 /**
@@ -35,7 +34,7 @@ export default function Button({
   ...props
 }) {
   const classes = cn(
-    'group/btn relative inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap rounded-sm font-heading font-semibold uppercase tracking-[0.14em]',
+    'group/btn relative inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap rounded-full font-medium',
     'transition-[background-color,border-color,color,box-shadow,transform] duration-300 ease-race active:scale-[0.98]',
     'disabled:pointer-events-none disabled:opacity-40',
     VARIANTS[variant],

@@ -24,14 +24,14 @@ function formatPhone(value) {
 }
 
 const inputClass =
-  'h-12 w-full rounded-sm border bg-graphite px-4 text-[15px] text-white placeholder:text-gray-dim transition-colors hover:border-white/30 focus-visible:border-red';
+  'h-12 w-full rounded-2xl border bg-graphite px-4 text-[15px] text-white placeholder:text-gray-dim transition-colors hover:border-white/30 focus-visible:border-red';
 
 function Field({ id, label, optional, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="label-tech flex justify-between">
+      <label htmlFor={id} className="label-tech flex justify-between text-white/80">
         {label}
-        {optional && <span className="normal-case tracking-normal text-gray-dim">opcional</span>}
+        {optional && <span className="text-gray-dim">opcional</span>}
       </label>
       {children}
       {error && (
@@ -119,23 +119,18 @@ export default function Contact() {
 
   return (
     <PageTransition>
-      <section aria-labelledby="contato-titulo" className="relative overflow-hidden border-b border-line">
-        <div aria-hidden="true" className="absolute inset-0 bg-grid [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-        <div className="shell relative pb-10 pt-8 lg:pb-14 lg:pt-14">
-          <div className="flex items-center gap-3">
-            <span aria-hidden="true" className="size-2 bg-red" />
-            <span className="label-tech">Fale com um consultor</span>
-          </div>
-          <h1 id="contato-titulo" className="display mt-4 text-[clamp(4.5rem,22vw,11rem)]">
+      <section aria-labelledby="contato-titulo">
+        <div className="shell pb-8 pt-6 lg:pb-10 lg:pt-12">
+          <h1 id="contato-titulo" className="display text-[clamp(2.75rem,8vw,5rem)]">
             Contato
           </h1>
-          <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-gray sm:text-base">
+          <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-gray sm:text-base">
             Dúvidas sobre um veículo, proposta de troca ou agendamento de visita: escolha o canal que preferir.
           </p>
         </div>
       </section>
 
-      <div className="shell grid gap-12 py-section lg:grid-cols-12 lg:gap-16">
+      <div className="shell grid gap-6 pb-section lg:grid-cols-12 lg:gap-8">
         {/* Canais */}
         <Reveal className="space-y-4 lg:col-span-5">
           {channels.map(({ href, external, icon: Icon, label, value, primary }) => (
@@ -144,21 +139,21 @@ export default function Contact() {
               href={href}
               {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
               className={cn(
-                'group flex items-center gap-4 rounded-md border p-5 transition-[border-color,background-color] duration-300',
-                primary ? 'border-red/60 bg-red/10 hover:bg-red/20' : 'border-line bg-graphite hover:border-white/30',
+                'glass glass-hover group flex items-center gap-4 rounded-3xl p-4',
+                primary && 'border-red/50',
               )}
             >
               <span
                 className={cn(
-                  'grid size-12 shrink-0 place-items-center rounded-sm',
-                  primary ? 'bg-red text-white' : 'border border-line-strong text-white',
+                  'grid size-12 shrink-0 place-items-center rounded-full',
+                  primary ? 'bg-red text-white' : 'bg-white/10 text-white',
                 )}
               >
                 <Icon className="size-5" aria-hidden="true" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="label-tech block">{label}</span>
-                <span className="block truncate font-heading text-lg font-semibold text-white">{value}</span>
+                <span className="block truncate font-heading text-base font-semibold text-white">{value}</span>
               </span>
               <ArrowUpRight
                 className="size-5 text-gray transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white"
@@ -167,7 +162,7 @@ export default function Contact() {
             </a>
           ))}
 
-          <figure className="relative mt-8 aspect-[16/10] overflow-hidden rounded-md border border-line">
+          <figure className="relative mt-2 aspect-[16/10] overflow-hidden rounded-3xl border border-white/15">
             <picture>
               <source srcSet="/img/loja-fachada.avif" type="image/avif" />
               <source srcSet="/img/loja-fachada.webp" type="image/webp" />
@@ -183,8 +178,7 @@ export default function Contact() {
             </picture>
             <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/90 via-transparent to-transparent" />
             <figcaption className="absolute bottom-4 left-4 right-4">
-              <span className="label-tech flex items-center gap-2 text-white">
-                <span aria-hidden="true" className="size-2 bg-red" />
+              <span className="label-tech text-white">
                 Nosso showroom
               </span>
               {SITE.address && <span className="mt-1 block text-sm text-white/80">{SITE.address}</span>}
@@ -194,12 +188,11 @@ export default function Contact() {
 
         {/* Formulário */}
         <Reveal delay={0.1} className="lg:col-span-7">
-          <div className="relative overflow-hidden rounded-md border border-line bg-black-2 p-5 sm:p-8">
-            <span aria-hidden="true" className="absolute left-0 top-0 h-[2px] w-24 bg-red" />
+          <div className="glass overflow-hidden rounded-3xl p-5 sm:p-8">
             {sentUrl ? (
               <div className="py-10 text-center" role="status">
                 <CircleCheck className="mx-auto size-12 text-red-bright" strokeWidth={1.5} aria-hidden="true" />
-                <h2 className="mt-6 font-heading text-2xl font-semibold uppercase tracking-wide">Mensagem pronta</h2>
+                <h2 className="mt-6 font-heading text-2xl font-semibold tracking-tight">Mensagem pronta</h2>
                 <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-gray">
                   Abrimos o WhatsApp com a sua mensagem preenchida. É só enviar para falar com um consultor.
                 </p>
@@ -215,7 +208,7 @@ export default function Contact() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
                 <div>
-                  <h2 className="font-heading text-xl font-semibold uppercase tracking-wide">Envie sua mensagem</h2>
+                  <h2 className="font-heading text-xl font-semibold tracking-tight">Envie sua mensagem</h2>
                   <p className="mt-1 text-sm text-gray">Montamos a mensagem e abrimos o WhatsApp para você enviar.</p>
                 </div>
 

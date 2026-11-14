@@ -29,7 +29,7 @@ export default function BottomSheet({ open, onClose, id, title, subtitle, footer
             aria-modal="true"
             aria-labelledby={`${id}-titulo`}
             tabIndex={-1}
-            className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col overflow-hidden rounded-t-lg border-t border-line-strong bg-black-2 shadow-deep outline-none"
+            className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col overflow-hidden rounded-t-lg border-t border-line-strong bg-black/70 backdrop-blur-2xl shadow-deep outline-none"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -70,7 +70,7 @@ export default function BottomSheet({ open, onClose, id, title, subtitle, footer
               {children}
             </div>
             {footer && (
-              <div className="shrink-0 border-t border-line bg-black px-gutter pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 border-t border-line bg-black/40 px-gutter pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                 {footer}
               </div>
             )}

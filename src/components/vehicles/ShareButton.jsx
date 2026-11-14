@@ -28,7 +28,7 @@ export default function ShareButton({ title, text }) {
     <button
       type="button"
       onClick={handleShare}
-      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-sm text-xs font-semibold uppercase tracking-[0.14em] text-gray transition-colors hover:text-white font-heading"
+      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm text-gray transition-colors hover:text-white"
     >
       {copied ? <Check className="size-4 text-red-bright" aria-hidden="true" /> : <Share className="size-4" aria-hidden="true" />}
       <span aria-live="polite">{copied ? 'Link copiado' : 'Compartilhar veículo'}</span>

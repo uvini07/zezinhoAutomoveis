@@ -10,18 +10,18 @@ export default function StickyVehicleCTA({ vehicle }) {
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', damping: 30, stiffness: 300, delay: 0.4 }}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-black/90 backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden"
     >
-      <div className="shell flex items-center justify-between gap-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="glass flex items-center justify-between gap-3 rounded-full py-1.5 pl-5 pr-1.5">
         <div className="min-w-0">
           <p className="label-tech">Preço</p>
-          <p className="truncate font-heading text-xl font-semibold leading-tight tnum">{formatPrice(vehicle.price)}</p>
+          <p className="truncate font-heading text-lg font-semibold leading-tight tnum">{formatPrice(vehicle.price)}</p>
         </div>
         <a
           href={generateWhatsAppLink(vehicle)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-12 shrink-0 items-center gap-2.5 rounded-sm bg-red px-5 font-heading text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-glow transition-colors active:bg-red-dark"
+          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-red px-5 text-sm font-medium text-white shadow-glow transition-colors active:bg-red-dark"
         >
           <WhatsAppIcon className="size-[18px]" />
           Quero este carro

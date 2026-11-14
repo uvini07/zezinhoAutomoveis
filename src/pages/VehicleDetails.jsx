@@ -29,17 +29,12 @@ import {
   getVehicleSpecList,
   getVehicleUrl,
   getYearLabel,
-  pad2,
 } from '@/utils/vehicleUtils';
 
-function DetailSection({ index, title, children }) {
+function DetailSection({ title, children }) {
   return (
-    <Reveal as="section" className="border-t border-line py-10 first:border-t-0 lg:py-12">
-      <h2 className="mb-6 flex items-center gap-3">
-        <span className="font-heading text-xs font-semibold tnum text-white">{index}</span>
-        <span aria-hidden="true" className="h-px w-6 bg-red" />
-        <span className="font-heading text-sm font-semibold uppercase tracking-[0.18em]">{title}</span>
-      </h2>
+    <Reveal as="section" className="glass mt-4 rounded-3xl p-5 sm:p-7">
+      <h2 className="mb-4 font-heading text-lg font-semibold">{title}</h2>
       {children}
     </Reveal>
   );
@@ -121,38 +116,35 @@ export default function VehicleDetails() {
         <div className="shell pt-4 lg:pt-8">
           <Link
             to={backTo}
-            className="group inline-flex min-h-11 items-center gap-2 font-heading text-xs font-semibold uppercase tracking-[0.14em] text-gray transition-colors hover:text-white"
+            className="glass glass-hover group inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm text-white/80 hover:text-white"
           >
             <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
-            Voltar para o estoque
+            Estoque
           </Link>
 
-          <article className="mt-2 grid gap-x-12 lg:mt-4 lg:grid-cols-12">
+          <article className="mt-4 grid gap-x-8 lg:mt-6 lg:grid-cols-12">
             {/* Galeria */}
-            <div className="-mx-gutter min-w-0 sm:mx-0 lg:col-span-7 lg:col-start-1 lg:row-start-1 xl:col-span-8">
+            <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-1 xl:col-span-8">
               <VehicleGallery vehicle={vehicle} />
             </div>
 
             {/* Resumo + CTAs (sticky no desktop) */}
             <aside className="min-w-0 pt-6 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:pt-0 xl:col-span-4 xl:col-start-9">
-              <div className="lg:sticky lg:top-24">
-                <div className="flex flex-wrap items-center gap-3">
+              <div className="glass rounded-3xl p-5 sm:p-7 lg:sticky lg:top-24">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="label-tech text-white">{vehicle.brand}</span>
-                  <span aria-hidden="true" className="h-px w-6 bg-line-strong" />
-                  <span className="label-tech">{vehicle.category}</span>
+                  <span className="label-tech">· {vehicle.category}</span>
                   <span className="ml-auto flex gap-1.5">
                     {vehicle.armored && <Badge variant="outline">Blindado</Badge>}
                     {vehicle.featured && <Badge>Destaque</Badge>}
                   </span>
                 </div>
-                <h1 className="mt-3 font-heading text-[2.15rem] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[2.75rem]">
+                <h1 className="mt-2 font-heading text-[2rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.5rem]">
                   {getVehicleName(vehicle)}
                 </h1>
                 <p className="mt-2 text-sm text-gray">
                   {fullName} · {getYearLabel(vehicle)} · {formatMileage(vehicle.mileage)}
                 </p>
-
-                <div className="redline mt-6 w-24" aria-hidden="true" />
 
                 <div className="mt-6">
                   <p className="label-tech">
@@ -163,7 +155,7 @@ export default function VehicleDetails() {
                       </>
                     )}
                   </p>
-                  <p className="font-heading text-[2.6rem] font-semibold leading-tight tnum sm:text-5xl">
+                  <p className="font-heading text-[2.4rem] font-semibold leading-tight tracking-tight tnum">
                     {formatPrice(vehicle.price)}
                   </p>
                 </div>
@@ -193,15 +185,15 @@ export default function VehicleDetails() {
 
             {/* Conteúdo */}
             <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-2 xl:col-span-8">
-              <DetailSection index="01" title="Descrição">
+              <DetailSection title="Descrição">
                 <p className="max-w-2xl text-base leading-relaxed text-gray sm:text-lg">{vehicle.description}</p>
               </DetailSection>
 
               {vehicle.highlights?.length > 0 && (
-                <DetailSection index="02" title="Destaques">
+                <DetailSection title="Destaques">
                   <ul className="grid gap-3 sm:grid-cols-2">
                     {vehicle.highlights.map((item) => (
-                      <li key={item} className="flex items-start gap-3 rounded-sm border border-line bg-graphite px-4 py-3.5">
+                      <li key={item} className="flex items-start gap-3 rounded-2xl bg-white/[0.05] px-4 py-3.5">
                         <Check className="mt-0.5 size-4 shrink-0 text-red-bright" aria-hidden="true" />
                         <span className="text-[15px] text-white">{item}</span>
                       </li>
@@ -210,14 +202,11 @@ export default function VehicleDetails() {
                 </DetailSection>
               )}
 
-              <DetailSection index="03" title="Especificações">
-                <dl className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2">
-                  {specList.map(({ label, value }, i) => (
-                    <div key={label} className="flex items-baseline justify-between gap-4 bg-black-2 px-4 py-3.5">
-                      <dt className="flex items-baseline gap-3 text-sm text-gray">
-                        <span className="font-heading text-[10px] tnum text-gray-dim">{pad2(i + 1)}</span>
-                        {label}
-                      </dt>
+              <DetailSection title="Especificações">
+                <dl className="grid gap-x-8 sm:grid-cols-2">
+                  {specList.map(({ label, value }) => (
+                    <div key={label} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
+                      <dt className="text-sm text-gray">{label}</dt>
                       <dd className="text-right font-heading text-[15px] font-semibold text-white">{value}</dd>
                     </div>
                   ))}
@@ -228,11 +217,10 @@ export default function VehicleDetails() {
         </div>
 
         {similar.length > 0 && (
-          <section aria-labelledby="similares-titulo" className="mt-8 border-t border-line py-section">
+          <section aria-labelledby="similares-titulo" className="py-section">
             <div className="shell">
               <SectionHeader
                 id="similares-titulo"
-                eyebrow="Continue explorando"
                 title="Você também pode gostar"
                 action={
                   <Button to="/estoque" variant="secondary">

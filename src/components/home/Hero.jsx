@@ -5,77 +5,157 @@ import { ArrowRight } from 'lucide-react';
 
 /* Vídeo acelerado: o carro cruza a tela em ~2.7s. */
 const SPEED = 1.6;
-/* O painel vem logo atrás do carro, como se fosse puxado, e para no centro. */
+/* Os textos vêm logo atrás do carro, como se fossem puxados, e param no centro. */
 const PULL_DELAY = 0.55;
 const PULL_DURATION = 1.9;
+const pullEase = [0.16, 1, 0.3, 1];
 
 /**
- * Hero em tela cheia: só o vídeo do carro. O painel de vidro com o nome
- * da loja entra pela esquerda junto com o carro e fica no centro.
+ * Prepara o vídeo para tocar sozinho em qualquer celular: o React não
+ * escreve o atributo `muted` no HTML, e sem ele o iOS bloqueia o autoplay
+ * e mostra o botão de play.
+ */
+function primeVideo(v) {
+  v.muted = true;
+  v.defaultMuted = true;
+  v.setAttribute('muted', '');
+  v.setAttribute('playsinline', '');
+  v.setAttribute('webkit-playsinline', '');
+  v.playbackRate = SPEED;
+}
+
+function Pulled({ as: Tag = 'div', show, delay = 0, className, children, ...props }) {
+  const MotionTag = motion[Tag];
+  return (
+    <MotionTag
+      initial={{ x: '-110vw', skewX: -10, filter: 'blur(10px)' }}
+      animate={show ? { x: 0, skewX: 0, filter: 'blur(0px)' } : {}}
+      transition={{ duration: PULL_DURATION, ease: pullEase, delay: PULL_DELAY + delay }}
+      className={className}
+      {...props}
+    >
+      {children}
+    </MotionTag>
+  );
+}
+
+/**
+ * Hero em tela cheia. O esportivo cruza o estúdio e puxa o nome da loja,
+ * que pousa sobre o piso com reflexo. Depois, a câmera se aproxima devagar.
  */
 export default function Hero() {
   const videoRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(Boolean(reduceMotion));
+  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
-    if (reduceMotion) return setShow(true);
     const v = videoRef.current;
-    if (v) v.playbackRate = SPEED;
-    const onPlay = () => setShow(true);
-    const fallback = setTimeout(() => v?.paused && setShow(true), 2500);
-    v?.addEventListener('playing', onPlay, { once: true });
-    v?.play?.().catch(() => {});
+    if (!v) return undefined;
+    primeVideo(v);
+    if (reduceMotion) {
+      setShow(true);
+      return undefined;
+    }
+
+    const tryPlay = () => v.play().catch(() => {});
+    const onPlaying = () => setShow(true);
+    const onEnded = () => setEnded(true);
+    // Modo economia de energia/dados pode impedir o autoplay: tenta de novo
+    // no primeiro toque ou rolagem, e mostra os textos de qualquer jeito.
+    const unlock = () => v.paused && !v.ended && tryPlay();
+    const fallback = setTimeout(() => {
+      if (v.paused) {
+        setShow(true);
+        setEnded(true);
+      }
+    }, 1800);
+
+    v.addEventListener('playing', onPlaying, { once: true });
+    v.addEventListener('ended', onEnded);
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+    window.addEventListener('scroll', unlock, { once: true, passive: true });
+    if (v.readyState >= 2) tryPlay();
+    else v.addEventListener('canplay', tryPlay, { once: true });
+
     return () => {
       clearTimeout(fallback);
-      v?.removeEventListener('playing', onPlay);
+      v.removeEventListener('playing', onPlaying);
+      v.removeEventListener('ended', onEnded);
+      v.removeEventListener('canplay', tryPlay);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('scroll', unlock);
     };
   }, [reduceMotion]);
 
   return (
-    <section aria-label="Zezinho Automóveis" className="full-bleed relative isolate h-svh min-h-[34rem] overflow-hidden">
-      <video
-        ref={videoRef}
-        className="absolute inset-0 -z-10 h-full w-full object-cover"
-        poster="/hero/carro-vermelho-poster.jpg"
-        muted
-        playsInline
-        preload="auto"
-        autoPlay={!reduceMotion}
+    <section aria-label="Zezinho Automóveis" className="full-bleed relative isolate h-svh min-h-[36rem] overflow-hidden bg-black">
+      {/* Vídeo: depois que o carro sai, aproxima devagar */}
+      <motion.div
         aria-hidden="true"
+        className="absolute inset-0 -z-10"
+        animate={ended && !reduceMotion ? { scale: 1.08 } : { scale: 1 }}
+        transition={{ duration: 14, ease: 'easeOut' }}
       >
-        <source src="/hero/carro-vermelho.webm" type="video/webm" />
-        <source src="/hero/carro-vermelho.mp4" type="video/mp4" />
-      </video>
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-linear-to-t from-black to-transparent" />
+        <video
+          ref={videoRef}
+          className="bg-video h-full w-full object-cover"
+          poster="/hero/carro-vermelho-poster.jpg"
+          muted
+          playsInline
+          autoPlay
+          preload="auto"
+          disablePictureInPicture
+          disableRemotePlayback
+          tabIndex={-1}
+        >
+          <source src="/hero/carro-vermelho.webm" type="video/webm" />
+          <source src="/hero/carro-vermelho.mp4" type="video/mp4" />
+        </video>
+      </motion.div>
 
-      {/* Textos no caminho do carro: vêm puxados por ele, da esquerda */}
-      <div className="absolute inset-x-4 top-1/2 flex -translate-y-1/2 flex-col items-center text-center">
-        <motion.h1
-          initial={reduceMotion ? false : { x: '-110vw', skewX: -10, filter: 'blur(10px)' }}
-          animate={show ? { x: 0, skewX: 0, filter: 'blur(0px)' } : {}}
-          transition={{ duration: PULL_DURATION, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY }}
-          className="font-heading text-[clamp(2.6rem,9vw,7.5rem)] font-semibold leading-none tracking-tight text-white [text-shadow:0_10px_40px_rgb(0_0_0/0.6)]"
+      {/* Luz vermelha que acende atrás do nome quando o carro passa */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[44%] -z-10 h-[22rem] w-[min(70rem,120vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-red/30 blur-[120px]"
+        initial={{ opacity: 0 }}
+        animate={show ? { opacity: 1 } : {}}
+        transition={{ duration: 2.4, delay: PULL_DELAY + 0.8 }}
+      />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-2/5 bg-linear-to-t from-black via-black/60 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-linear-to-b from-black/70 to-transparent" />
+
+      {/* Nome pousado no piso, com reflexo */}
+      <div className="absolute inset-x-4 top-[57%] -translate-y-full text-center">
+        <Pulled as="p" show={show} className="text-[clamp(0.95rem,1.8vw,1.35rem)] text-white/75">
+          A melhor loja da região.
+        </Pulled>
+        <Pulled
+          as="h1"
+          show={show}
+          delay={0.08}
+          className="mt-3 bg-linear-to-b from-white to-white/70 bg-clip-text font-heading text-[clamp(2.9rem,9.5vw,8rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-transparent"
         >
           Zezinho Automóveis
-        </motion.h1>
-        <motion.p
-          initial={reduceMotion ? false : { x: '-110vw', filter: 'blur(10px)' }}
-          animate={show ? { x: 0, filter: 'blur(0px)' } : {}}
-          transition={{ duration: PULL_DURATION, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY + 0.15 }}
-          className="mt-4 text-[clamp(1rem,2.2vw,1.6rem)] text-white/75"
+        </Pulled>
+      </div>
+      <div aria-hidden="true" className="absolute inset-x-4 top-[57%] text-center">
+        <Pulled
+          show={show}
+          delay={0.08}
+          className="-scale-y-100 bg-linear-to-t from-white/30 to-transparent bg-clip-text font-heading text-[clamp(2.9rem,9.5vw,8rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-transparent opacity-60 blur-[1.5px] [mask-image:linear-gradient(to_top,black,transparent_70%)]"
         >
-          A melhor loja da região.
-        </motion.p>
+          Zezinho Automóveis
+        </Pulled>
       </div>
 
       {/* Barra de vidro achatada com a ação */}
-      <div className="absolute inset-x-3 bottom-6 flex justify-center sm:bottom-10">
+      <div className="absolute inset-x-3 bottom-[max(1.5rem,env(safe-area-inset-bottom))] flex justify-center sm:bottom-10">
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={show ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: PULL_DELAY + PULL_DURATION * 0.6 }}
-          className="glass flex w-full items-center justify-between gap-4 rounded-full py-1.5 pl-6 pr-1.5 sm:w-auto sm:gap-8"
+          transition={{ duration: 0.8, ease: pullEase, delay: PULL_DELAY + PULL_DURATION * 0.6 }}
+          className="glass flex w-full max-w-md items-center justify-between gap-4 rounded-full py-1.5 pl-6 pr-1.5"
         >
           <p className="text-sm text-white/75">Seu próximo carro começa aqui.</p>
           <Link
