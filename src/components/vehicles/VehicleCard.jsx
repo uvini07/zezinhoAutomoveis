@@ -19,7 +19,7 @@ export default function VehicleCard({ vehicle, priority = false }) {
   const location = useLocation();
 
   return (
-    <article className="vehicle-card glass glass-hover group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] p-2 hover:-translate-y-1">
+    <article className="vehicle-card glow-card glass glass-hover group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] p-2 hover:-translate-y-1">
       <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem] bg-white/5">
         <div className="absolute inset-0 transition-transform duration-700 ease-race group-hover:scale-[1.04]">
           <VehicleImage

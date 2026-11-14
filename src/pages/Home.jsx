@@ -8,6 +8,7 @@ import VehicleCard from '@/components/vehicles/VehicleCard';
 import SkeletonVehicleCard from '@/components/vehicles/SkeletonVehicleCard';
 import JsonLd from '@/components/ui/JsonLd';
 import { useDocumentMeta } from '@/hooks/useDocumentMeta';
+import { useGlowGrid } from '@/hooks/useGlowGrid';
 import { useVehicles } from '@/hooks/useVehicles';
 import { SITE } from '@/config/site';
 import { sortVehicles } from '@/utils/vehicleUtils';
@@ -39,6 +40,8 @@ export default function Home() {
   useDocumentMeta({ path: '/' });
   const { vehicles, isLoading } = useVehicles();
   const showcase = useMemo(() => pickShowcase(vehicles), [vehicles]);
+  const carsGlow = useGlowGrid();
+  const valuesGlow = useGlowGrid();
 
   return (
     <div className="full-bleed">
@@ -62,7 +65,11 @@ export default function Home() {
           </Link>
         </Reveal>
 
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          ref={carsGlow.ref}
+          onPointerMove={carsGlow.onPointerMove}
+          className="glow-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {(isLoading ? Array.from({ length: 6 }) : showcase).map((v, i) => (
             <Reveal as="li" key={v?.id ?? i} delay={(i % 3) * 0.06}>
               {v ? <VehicleCard vehicle={v} priority={i < 3} /> : <SkeletonVehicleCard />}
@@ -81,9 +88,13 @@ export default function Home() {
 
       {/* Por que a Zezinho */}
       <section id="sobre" aria-label="Por que a Zezinho" className="shell scroll-mt-24 pt-24 sm:pt-32">
-        <ul className="grid gap-4 sm:grid-cols-3">
+        <ul
+          ref={valuesGlow.ref}
+          onPointerMove={valuesGlow.onPointerMove}
+          className="glow-grid grid gap-4 sm:grid-cols-3"
+        >
           {VALORES.map(({ icon: Icon, title, text }, i) => (
-            <Reveal as="li" key={title} delay={i * 0.08} className="glass rounded-3xl p-6">
+            <Reveal as="li" key={title} delay={i * 0.08} className="glow-card glass rounded-3xl p-6">
               <span className="grid size-11 place-items-center rounded-full bg-red/20 text-red-bright">
                 <Icon className="size-5" aria-hidden="true" />
               </span>
